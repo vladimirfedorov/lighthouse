@@ -1,7 +1,7 @@
 name=Lighthouse
 author=Vladimir Fedorov
-description=Guide ships through mysterious, treacherous waters to safety.
+description=A quest to recall why you are guiding ships through treacherous waters to safety.
 bundleID=com.vladimirfedorov.lighthouse
 version=1.0
-buildNumber=1
+buildNumber=3
 imagePath=images
