@@ -1,7 +1,11 @@
 import "CoreLibs/graphics"
 import "CoreLibs/crank"
+import "ship"
 
 local gfx = playdate.graphics
+local ships = {}
+local scoreboard = { successes = 0, failures = 0 }
+
 local squareSize = 20
 local beamAngle = 0
 local beamSpread = 3
@@ -10,30 +14,8 @@ local frameCount = 0
 local startTime = playdate.getCurrentTimeMilliseconds()
 local lastFPS = 0  -- Store the last calculated FPS
 
-local ship = {
-    x = 0,
-    y = 0,
-    speed = 1,
-    size = 5,
-    angle = 0,
-    deviationAngle = 0,
-    noticeTimer = 0
-}
-
-
 local centerX, centerY = 200, 120
 local initialDistance = 140
-
-function initShip(angle)
-    ship.angle = angle
-    ship.deviationAngle = 0
-    ship.noticeTimer = 0
-    local radians = math.rad(ship.angle)
-    ship.x = centerX + initialDistance * math.cos(radians)
-    ship.y = centerY + initialDistance * math.sin(radians)
-    ship.speed = 1
-    -- print(string.format("Ship: %i %i", ship.x, ship.y))
-end
 
 function angleFromCenterToPoint(x, y)
     local deltaX = x - centerX
@@ -42,27 +24,31 @@ function angleFromCenterToPoint(x, y)
 end
 
 function updateAndDrawShip()
-    if ship.x < 0 or ship.x > 400 or ship.y < 0 or ship.y > 240 then
-        initShip(math.random() * 360)
-    end
+    for i = #ships, 1, -1 do
+        local ship = ships[i]
 
-    if ((ship.x - 200)^2 + (ship.y - 120)^2) <= 10^2 then
-        initShip(math.random() * 360)
-    end
+        local diff = ship.angle - beamAngle
+        if ship.deviationAngle == 0 and math.abs(diff) <= 10 then
+            if ship.noticeTimer >= 15 and ship.deviationAngle == 0 then
+                ship.deviationAngle = diff > 0 and 30 or -30
+                spawnShip()
+            elseif ship.hasAppeared then
+                ship.noticeTimer = ship.noticeTimer + 1
+            end
+        end
 
-    gfx.fillCircleAtPoint(ship.x, ship.y, ship.size)
+        ship:update()
+        ship:draw()
 
-    local angleDifference = ship.angle - beamAngle
-    if ship.deviationAngle == 0 and math.abs(angleDifference) <= 10 then
-       if ship.noticeTimer >= 15 then
-            ship.deviationAngle = angleDifference > 0 and 30 or -30
-       else
-            ship.noticeTimer = ship.noticeTimer + 1
-       end
+        if ship:isInCenter() then
+            table.remove(ships, i)
+            scoreboard.failures = scoreboard.failures + 1
+            spawnShip()
+        elseif ship:isOutsideScreen() then
+            table.remove(ships, i)
+            scoreboard.successes = scoreboard.successes + 1
+        end
     end
-    local radians = math.rad(ship.angle + ship.deviationAngle)
-    ship.x = ship.x - ship.speed * math.cos(radians)
-    ship.y = ship.y - ship.speed * math.sin(radians)
 end
 
 function drawLighthouse()
@@ -107,7 +93,7 @@ function updateFPS()
 
     -- Display the FPS
     gfx.setFont(gfx.font.kSystemFontBold)
-    gfx.drawText(string.format("FPS: %d", lastFPS), 10, 10)
+    gfx.drawText(string.format("FPS: %d SAFE: %d WRECKED: %d", lastFPS, scoreboard.successes, scoreboard.failures), 10, 10)
 end
 
 function updateWaves()
@@ -161,13 +147,19 @@ function updateBeamAngle()
     beamAngle = (beamAngle + crankChange / 3) % 360
 end
 
+function spawnShip()
+    local angle = math.random(0, 360)
+    table.insert(ships, Ship:new(angle))
+end
 
 function init()
     math.randomseed(playdate.getSecondsSinceEpoch())
     drawLighthouse()
     drawBeam()
     updateWaves()
-    initShip(math.random() * 360)
+    spawnShip()
+    spawnShip()
+    spawnShip()
     updateFPS()
 end
 
