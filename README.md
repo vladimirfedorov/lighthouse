@@ -1,6 +1,6 @@
 # Lighthouse
 
-This is a PlayDate game developed during PlayJam 5.
+This is a PlayDate game developed during [PlayJam 5](https://itch.io/jam/playjam-5).
 
 ## Day One
 
