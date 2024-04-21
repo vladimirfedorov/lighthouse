@@ -2,6 +2,8 @@ import "CoreLibs/graphics"
 import "CoreLibs/crank"
 import "ship"
 
+
+local mathtab = import "mathtab"
 local gfx = playdate.graphics
 local ships = {}
 local scoreboard = { successes = 0, failures = 0 }
@@ -17,18 +19,12 @@ local lastFPS = 0  -- Store the last calculated FPS
 local centerX, centerY = 200, 120
 local initialDistance = 140
 
-function angleFromCenterToPoint(x, y)
-    local deltaX = x - centerX
-    local deltaY = y - centerY
-    return math.deg(math.atan2(deltaY, deltaX))  -- Convert radians to degrees
-end
-
 function updateAndDrawShip()
     for i = #ships, 1, -1 do
         local ship = ships[i]
 
         local diff = ship.angle - beamAngle
-        if ship.deviationAngle == 0 and math.abs(diff) <= 10 then
+        if ship.deviationAngle == 0 and math.abs(diff) <= beamSpread * 2 then
             if ship.noticeTimer >= 15 and ship.deviationAngle == 0 then
                 ship.deviationAngle = diff > 0 and 30 or -30
                 spawnShip()
@@ -59,10 +55,15 @@ function drawLighthouse()
 end
 
 function drawBeam()
-    local x1 = 200 + 240 * math.cos(math.rad(beamAngle - beamSpread)) 
-    local y1 = 120 + 240 * math.sin(math.rad(beamAngle - beamSpread))
-    local x2 = 200 + 240 * math.cos(math.rad(beamAngle + beamSpread)) 
-    local y2 = 120 + 240 * math.sin(math.rad(beamAngle + beamSpread))
+    -- local x1 = 200 + 240 * math.cos(math.rad(beamAngle - beamSpread)) 
+    -- local y1 = 120 + 240 * math.sin(math.rad(beamAngle - beamSpread))
+    -- local x2 = 200 + 240 * math.cos(math.rad(beamAngle + beamSpread)) 
+    -- local y2 = 120 + 240 * math.sin(math.rad(beamAngle + beamSpread))
+
+    local x1 = 200 + 240 * mathtab.cos(beamAngle - beamSpread)
+    local y1 = 120 + 240 * mathtab.sin(beamAngle - beamSpread)
+    local x2 = 200 + 240 * mathtab.cos(beamAngle + beamSpread) 
+    local y2 = 120 + 240 * mathtab.sin(beamAngle + beamSpread)
 
     -- gfx.setColor(gfx.kColorWhite)
     -- gfx.setColor(gfx.kColorBlack)
@@ -72,12 +73,6 @@ function drawBeam()
     gfx.drawLine(200, 120, x1, y1)
     gfx.drawLine(200, 120, x2, y2)
     gfx.setColor(gfx.kColorBlack)
-end
-
-function drawRay(angle, color)
-    local x = 200 + 240 * math.cos(math.rad(angle))
-    local y = 120 + 240 * math.sin(math.rad(angle))
-    gfx.drawLine(200, 120, x, y)
 end
 
 function updateFPS()
@@ -114,7 +109,7 @@ function updateWaves()
     -- gfx.popContext()  -- Restore the previous graphics context
 
 
-    gfx.pushContext()  -- Save the current graphics context
+    -- gfx.pushContext()  -- Save the current graphics context
     -- gfx.setDitherPattern(0.5, gfx.image.kDitherTypeBayer4x4)
     -- gfx.setPattern({ 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55 })
 
@@ -123,28 +118,40 @@ function updateWaves()
     local angleOffset, radiusOffset
 
     for _, baseRadius in ipairs(radii) do
-        local numArcs = 49
+        local numArcs = (baseRadius / 4) // 1
         local arcLength = 360 / numArcs / 3
         local arcStep = 360 / numArcs
         for i = 1, numArcs do
-            arcStartOffset = 5 * math.sin(math.rad(frameNumber + i * 1)) 
-            arcEndOffset = 5 * math.sin(math.rad(frameNumber + i * 1)) 
-            radiusOffset = 5 * math.sin(math.rad(frameNumber + i * 1))
 
-            local startAngle = (i - 1) * arcStep + arcStartOffset + baseRadius
-            local endAngle = (i - 1) * arcStep + arcLength + arcEndOffset + baseRadius
+            local arcStartOffset = 5 * mathtab.sin(frameNumber + i * 1 + baseRadius)
+            local arcEndOffset   = 5 * mathtab.sin(frameNumber + i * 1 + baseRadius)
+            local radiusOffset   = 5 * mathtab.sin(frameNumber + i * 1)
+
+            local startAngle = (i - 1) * arcStep + arcStartOffset -- + baseRadius
+            local endAngle   = (i - 1) * arcStep + arcLength + arcEndOffset -- + baseRadius
             local radius = baseRadius + radiusOffset
 
-            gfx.drawArc(centerX, centerY, radius, startAngle, endAngle)
+            local startY = centerY + baseRadius * mathtab.sin(startAngle-90)
+            local endY = centerY + baseRadius * mathtab.sin(endAngle-90)
+
+            if baseRadius > 180 then
+                gfx.setPattern({ 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55 })
+            else
+                gfx.setColor(gfx.kColorBlack)
+            end
+
+            if startY > 0 and startY < 240 and endY > 0 and endY < 240 then
+                gfx.drawArc(centerX, centerY, radius, startAngle, endAngle)
+            end
         end
     end
-
-    gfx.popContext()  -- Restore the previous graphics context
+    gfx.setColor(gfx.kColorBlack)
+    -- gfx.popContext()  -- Restore the previous graphics context
 end
 
 function updateBeamAngle()
     local crankChange = playdate.getCrankChange()
-    beamAngle = (beamAngle + crankChange / 3) % 360
+    beamAngle = (beamAngle + crankChange / 4) % 360
 end
 
 function spawnShip()
