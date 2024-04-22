@@ -4,11 +4,18 @@ lighthouse = nil
 mermaids = nil
 kraken = nil
 
-scoreboard = { successes = 0, failures = 0 }
+scoreboard = { saved = 0, wrecked = 0, notified = 0 }
 
 gameState = {
     isPaused = false,
     scoreboard = scoreboard,
     campaignProgress = 0,       -- -1 is free play, >=0 is the story mode
-    campaignCounter = 0
+    campaignCounter = 0,
+
+   	isCannonAvailable = false,
+   	isHornAvailable = false
+}
+
+gameStore = {
+	hasCompletedStory = false
 }

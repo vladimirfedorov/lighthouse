@@ -42,6 +42,7 @@ function Dialog:update()
 	if playdate.buttonJustPressed(playdate.kButtonA) then
 		self.textSprite:remove()
 		if self.done ~= nil then
+			playdate.sound.fileplayer.new("sounds/clav"):play()
 			self.done()
 		end
 		self:remove()

@@ -3,9 +3,6 @@ local gfx = playdate.graphics
 class("Wreckage").extends(gfx.sprite)
 
 function Wreckage:init(x, y, ballSize)
-
-    print(x, y)
-
     self.x = x
     self.y = y
     self.ballSize = ballSize
@@ -22,7 +19,6 @@ function Wreckage:draw()
     local minRadius = 0
     for i = 1, 3 do
         local radius = minRadius + i * 4 + ((30 - self.counter) / 10)
-        print(radius)
         gfx.setPattern({ 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55 })
         gfx.drawCircleAtPoint(self.size / 2, self.size / 2, radius)
         gfx.setColor(gfx.kColorBlack)
