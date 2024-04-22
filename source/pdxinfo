@@ -3,5 +3,5 @@ author=Vladimir Fedorov
 description=A quest to recall why you are guiding ships through treacherous waters to safety.
 bundleID=com.vladimirfedorov.lighthouse
 version=1.0
-buildNumber=85
+buildNumber=340
 imagePath=images
