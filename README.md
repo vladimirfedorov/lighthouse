@@ -13,3 +13,9 @@ By the end of the day, I had developed most of the game mechanics (sea monsters 
 [<img src="docs/v/lighthouse-build-85.mov" width="400">](docs/v/lighthouse-build-85.mov)
 
 And (quite alarmingly) that was it.
+
+## Day Two
+
+I've added a simple storyline and sea monsters to improve the gameplay today. The game is using sprites now, but I had to remove the waves, as they were consuming too many resources on the real device. With these changes, Lighthouse is starting to feel like a real game.
+
+[<img src="docs/v/lighthouse-build-337.gif" width="400">](docs/v/lighthouse-build-337.gif)
