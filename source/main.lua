@@ -17,6 +17,7 @@ import "mermaids"
 import "pot"
 import "inventory"
 import "menu"
+import "Wave"
 
 local squareSize = 20
 local beamAngle = 0
@@ -131,7 +132,7 @@ function runStory()
     if gameState.campaignProgress == 0 and gameState.scoreboard.wrecked >= 1 then
         gameState.scoreboard.wrecked = 0
         gameState.isPaused = true
-        Dialog("Uh-oh, no worries. I'll come down later to give the poor guys some coffee and buns. Try to point the beam at the ship for a moment so they see it.", "base", function()
+        Dialog("Uh-oh, no worries. I'll come down later to give the poor guys some coffee and buns. Try to point the beam at the ship for a moment so they see it.", "what", function()
             gameState.isPaused = false
         end)
     end
@@ -146,12 +147,12 @@ function runStory()
         end)
     end
     -- More ships saved, introduce Mermaids
-    if gameState.campaignProgress == 1 and gameState.scoreboard.saved >= 3 then
+    if gameState.campaignProgress == 1 and gameState.scoreboard.saved >= 6 then
         gameState.campaignProgress = 2
         gameState.isPaused = true
         Dialog("Hmm I wonder what a strange fish it is... it's always nice to see new species in these waters.", "base", function()
-            Dialog("I mean...", "base", function()
-                Dialog("*M E R M A I D S ! ! !*\n\nThere must be a cannon somewere down there!\n\n*( B )* Switch Equipment", "base", function() 
+            Dialog("I mean...", "what", function()
+                Dialog("*M E R M A I D S ! ! !*\n\nThere must be a cannon somewere down there!\n\n*( B )* Switch Equipment", "ah", function() 
                     gameState.isCannonAvailable = true
                     gameState.isPaused = false
                     spawnMermaids()
@@ -160,12 +161,12 @@ function runStory()
         end)
     end
     -- More ships saved, introduce Kraken
-    if gameState.campaignProgress == 2 and gameState.scoreboard.saved >= 6 then
+    if gameState.campaignProgress == 2 and gameState.scoreboard.saved >= 12 then
         gameState.campaignProgress = 3
         gameState.isPaused = true
         Dialog("Did you know that octopodes are very smart animals? That wonderful tentacles must belong to a truly magnificent creature...", "base", function()
-            Dialog("I mean...", "base", function()
-                Dialog("*K R A K E N ! ! !*\n\nCannon cannon cannon!!!", "base", function() 
+            Dialog("I mean...", "what", function()
+                Dialog("*K R A K E N ! ! !*\n\nCannon cannon cannon!!!", "ah", function() 
                     gameState.isPaused = false
                     spawnKraken()
                 end)
@@ -173,7 +174,7 @@ function runStory()
         end)
     end
     -- More ships saved, introducing the Horn
-    if gameState.campaignProgress == 3 and gameState.scoreboard.saved >= 10 then
+    if gameState.campaignProgress == 3 and gameState.scoreboard.saved >= 20 then
         gameState.campaignProgress = 4
         gameState.campaignCounter = 30 * 60 -- give some time to play
         gameState.isPaused = true
@@ -183,7 +184,7 @@ function runStory()
         end)
     end
     -- The sea start boiling...
-    if gameState.campaignProgress == 4 and gameState.scoreboard.saved >= 20 then 
+    if gameState.campaignProgress == 4 and gameState.scoreboard.saved >= 30 then 
         gameState.campaignProgress = 5
         spawnBubbles()
         playdate.timer.performAfterDelay(2000, function()
@@ -191,8 +192,8 @@ function runStory()
             gameState.campaignProgress = 6
             gameState.isPaused = true
             Dialog("Oh-oh, that looks strange!\nOh wait...\nOh no, not that again!", "base", function()
-                Dialog("Every time I do it, I go down the memory lane and forget about it!", "base", function()
-                    Dialog("This is not a sea...", "base", function()
+                Dialog("Every time I do it, I go down the memory lane and forget about it!", "what", function()
+                    Dialog("This is not a sea...", "ah", function()
                         Dialog("This is my\n*F I S H S O U P ! ! !*", "base", function()
                             gameState.isPaused = false
                             runFishSoupAnimation()
@@ -246,7 +247,7 @@ end
 
 function startStory()
     for _, timer in ipairs(playdate.timer.allTimers()) do
-        timer.remove()
+        timer:remove()
     end
     gfx.sprite.removeAll()
     shaker = Shake()
@@ -254,6 +255,9 @@ function startStory()
     gameState.isHornAvailable = false
     gameState.campaignProgress = 0
     gameState.campaignCounter = 0
+    gameState.scoreboard.saved = 0
+    gameState.scoreboard.wrecked = 0
+    gameState.scoreboard.notified = 0
     lighthouse = Lighthouse()
     lighthouse:equip(-1)    -- hide the beam
     Inventory()
@@ -262,13 +266,16 @@ end
 
 function startFreePlay()
     for _, timer in ipairs(playdate.timer.allTimers()) do
-        timer.remove()
+        timer:remove()
     end
     gfx.sprite.removeAll()
     shaker = Shake()
     gameState.isCannonAvailable = true
     gameState.isHornAvailable = false
     gameState.campaignProgress = -1
+    gameState.scoreboard.saved = 0
+    gameState.scoreboard.wrecked = 0
+    gameState.scoreboard.notified = 0
     lighthouse = Lighthouse()
     lighthouse:equip(0)
     Inventory()
@@ -340,7 +347,7 @@ init()
 function playdate.update()
     gfx.sprite.update()
     playdate.timer.updateTimers()
-    playdate.drawFPS(0, 0)
+    -- playdate.drawFPS(0, 0)
 
     if gameState.campaignProgress >= 0 then
         runStory()

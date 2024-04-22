@@ -51,12 +51,16 @@ function Menu:update()
 		self.selectedOption += 1
 		if self.selectedOption >= self.optionsCount then
 			self.selectedOption = self.optionsCount - 1
+		else
+			playdate.sound.fileplayer.new("sounds/clav"):play()
 		end
 	end
 	if playdate.buttonJustPressed(playdate.kButtonUp) then
 		self.selectedOption -= 1
 		if self.selectedOption < 0 then
 			self.selectedOption = 0
+		else
+			playdate.sound.fileplayer.new("sounds/clav"):play()
 		end
 	end
 	local x = (screen.width - self.textSprite.width) / 2
@@ -64,6 +68,8 @@ function Menu:update()
 	self.selectorSprite:moveTo(x, y)
 
 	if playdate.buttonJustPressed(playdate.kButtonA) then
+		playdate.sound.fileplayer.new("sounds/clav"):play()
 		self.done(self.selectedOption)
+		self:remove()
 	end
 end

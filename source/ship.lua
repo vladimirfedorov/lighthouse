@@ -35,7 +35,7 @@ function Ship:draw()
     local y = self.size / 2
     gfx.fillCircleAtPoint(x, y, 5)
 
-    if self.deviationAngle > 0 and self.deviationAngle < 30 then
+    if self.deviationAngle > 0 and self.deviationAngle < 45 then
         local lines = 6
         for i = 0, 360, 360 / lines do
             local x1 = x + 6 * math.cos(math.rad(self.angle + i))
@@ -68,7 +68,7 @@ function Ship:update()
         didAlert()
     end
 
-    if self.noticeTimer >= 15 and self.deviationAngle < 30 then
+    if self.noticeTimer >= 15 and self.deviationAngle < 45 then
         self.deviationAngle += 3
         self:markDirty()
     end

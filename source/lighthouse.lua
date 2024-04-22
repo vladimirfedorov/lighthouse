@@ -68,6 +68,7 @@ function Lighthouse:update()
 	end
 	if playdate.buttonJustPressed(playdate.kButtonA) then
 		if self.equipment == 1 then
+			playdate.sound.fileplayer.new("sounds/KickDrum"):play()
 			shake(3)
 			Cannonball(self.angle)
 		elseif self.equipment == 2 then
