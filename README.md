@@ -19,3 +19,13 @@ And (quite alarmingly) that was it.
 I've added a simple storyline and sea monsters to improve the gameplay today. The game is using sprites now, but I had to remove the waves, as they were consuming too many resources on the real device. With these changes, Lighthouse is starting to feel like a real game.
 
 [<img src="docs/v/lighthouse-build-337.gif" width="400">](docs/v/lighthouse-build-337.gif)
+
+## Day Three
+
+Well, that were three insane days. Waves are gone: I have absolutely no time to add sprites with the same effect. The game receives its system menu, two game modes (but you need to pass the story mode first) and some sounds.
+
+[<img src="docs/v/lighthouse-build-449.gif" width="400">](docs/v/lighthouse-build-449.gif)
+
+I managed to carve out a little time to work on some graphics, but Procreate isn't ideal for 1-bit graphics. The images turned out dirty and fuzzy, but that's what it is for now.
+
+Anyway, I am glad I got this amazing opportunity to make a game for the console I admire so much. You can download it [here](https://fourbit.itch.io/lighthouse).
