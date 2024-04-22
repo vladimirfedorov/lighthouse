@@ -68,12 +68,18 @@ function Lighthouse:update()
 	end
 	if playdate.buttonJustPressed(playdate.kButtonA) then
 		if self.equipment == 1 then
+			shake(3)
 			Cannonball(self.angle)
 		elseif self.equipment == 2 then
 			Soundwaves()
 		end
 	end
 	if playdate.buttonJustPressed(playdate.kButtonB) then
-		self:equip((self.equipment + 1) % 3)
+		if self.equipment == -1 then
+			return 
+		end
+		local divider = gameState.isHornAvailable and 3 or (gameState.isCannonAvailable and 2 or 1)
+		self.equipment = (self.equipment + 1) % divider
+		self:equip(self.equipment)
 	end
 end

@@ -11,7 +11,7 @@ class("Ship").extends(gfx.sprite)
 
 function Ship:init(angle)
 	local size = 18
-    local offset = 200
+    local offset = screen.radius
 
     self:setSize(size, size)
     local x = screen.centerX + offset * math.cos(math.rad(angle))
@@ -24,7 +24,7 @@ function Ship:init(angle)
     self.noticeTimer = 0
 
     self:setCollideRect(0, 0, self:getSize())
-    self.speed = 1
+    self.speed = 0.5
     self:moveTo(x, y)
     self:add()
 end
@@ -58,10 +58,14 @@ function Ship:update()
         return
     end
 
-    if lighthouse ~= nil and lighthouse:isOn() and math.abs(lighthouse.angle - self.angle) < 6 then
+    if lighthouse ~= nil and lighthouse:isOn() and math.abs(lighthouse.angle - self.angle) < 6 and self.didAppear then
         if self.noticeTimer < 15 then
             self.noticeTimer += 1
         end
+    end
+
+    if self.noticeTimer >= 15 and self.deviationAngle == 0 then
+        didAlert()
     end
 
     if self.noticeTimer >= 15 and self.deviationAngle < 30 then
@@ -75,19 +79,20 @@ function Ship:update()
         local angle = math.deg(math.atan2(deltaY, deltaX))
         self.deviationAngle = 360
         self.angle = angle
+    elseif self.deviationAngle == 360 then
+        self.deviationAngle = 0
     end
 
-	self.x -= self.speed * math.cos(math.rad(self.angle + self.deviationAngle))
-	self.y -= self.speed * math.sin(math.rad(self.angle + self.deviationAngle))
-    if self.x > 0 and self.x < screen.width and self.y > 0 and self.y < screen.height then
+	local x = self.x - self.speed * math.cos(math.rad(self.angle + self.deviationAngle))
+	local y = self.y - self.speed * math.sin(math.rad(self.angle + self.deviationAngle))
+    if x > 0 and x < screen.width and y > 0 and y < screen.height then
         self.didAppear = true
     end
-	if self.x < 0 or self.x >= screen.width or self.y < 0 or self.y > screen.height and self.didAppear then
+	if (x < 0 or x > screen.width or y < 0 or y > screen.height) and self.didAppear then
 		self:remove()
         didSaveShip()
-        spawnShip()
 	end
-	local actualX, actualY, collisions, length = self:moveWithCollisions(self.x, self.y)
+	local actualX, actualY, collisions, length = self:moveWithCollisions(x, y)
 	if length > 0 then
         for index, collision in ipairs(collisions) do
             local collidedObject = collision['other']
@@ -99,7 +104,6 @@ function Ship:update()
                 shake(5)
                 self:remove()
                 didCrashShip()
-                spawnShip()
                 Wreckage(actualX, actualY, 5)
             elseif collidedObject:isa(Cannonball) then
                 collidedObject:remove()
@@ -107,7 +111,6 @@ function Ship:update()
                 didCrashShip()
                 Wreckage(actualX, actualY, 5)
             end
-
         end
     end
 end
