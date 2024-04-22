@@ -1,5 +1,6 @@
 import "kraken"
 import "mermaids"
+import "wreckage"
 
 local gfx = playdate.graphics
 
@@ -40,8 +41,8 @@ function Cannonball:update()
 		self:remove()
 	end
 	if self.speed < 2 then
-		-- splash
 		self:remove()
+		Wreckage(x, y, 3)
 	end
 	local actualX, actualY, collisions, length = self:moveWithCollisions(x, y)
 	if length > 0 then

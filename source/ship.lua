@@ -94,18 +94,18 @@ function Ship:update()
             if collidedObject:isa(Kraken) or collidedObject:isa(Mermaids) then
                 self:remove()
                 didCrashShip()
-                Wreckage(actualX, actualY)
+                Wreckage(actualX, actualY, 5)
             elseif collidedObject:isa(Lighthouse) then
                 shake(5)
                 self:remove()
                 didCrashShip()
                 spawnShip()
-                Wreckage(actualX, actualY)
+                Wreckage(actualX, actualY, 5)
             elseif collidedObject:isa(Cannonball) then
                 collidedObject:remove()
                 self:remove()
                 didCrashShip()
-                Wreckage(actualX, actualY)
+                Wreckage(actualX, actualY, 5)
             end
 
         end
