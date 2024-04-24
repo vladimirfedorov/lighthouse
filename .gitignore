@@ -1,2 +1,5 @@
 # Compiled Lua sources
 *.pdx
+
+# Workspace files
+*.sublime-workspace

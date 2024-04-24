@@ -1,0 +1,48 @@
+{
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	],
+	"settings":
+	{
+		"LSP":
+		{
+			"LSP-lua":
+			{
+				"settings":
+				{
+					"Lua.workspace.library": [
+						"~/Developer/tools/PlaydateSDK/CoreLibs"
+					],
+					"Lua.diagnostics.globals":
+					[
+						"import"
+					],
+					"Lua.runtime.nonstandardSymbol": [
+						 "//",
+                          "/**/",
+                          "`",
+                          "+=",
+                          "-=",
+                          "*=",
+                          "/=",
+                          "%=",
+                          "^=",
+                          "//=",
+                          "|=",
+                          "&=",
+                          "<<=",
+                          ">>=",
+                          "||",
+                          "&&",
+                          "!",
+                          "!=",
+                          "continue"
+					],
+				}
+			}
+		}
+	}
+}
